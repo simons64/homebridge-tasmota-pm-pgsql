@@ -1,25 +1,38 @@
 {
 	"accessories": [
-	    {
-			"accessory": "mqtt-switch-espurna2",
-			"name": "ESPURNA-KUEHLER",
+		{
+			"accessory": "tasmota-postgres",
+
+			"name": "NAME OF THIS ACCESSORY",
 		
-			"url": "mqtt://192.168.10.24",
-			"username": "mqttuser",
-			"password": "2457",
-		
+			"url": "mqtt://MQTT-ADDRESS",
+			"username": "MQTT USER NAME",
+			"password": "MQTT PASSWORD",
+
 			"topics": {
-				"state": "ESPURNA-KUEHLER/status",
-				"data": "ESPURNA-KUEHLER/data",
-				"toggle": "ESPURNA-KUEHLER/relay/0/set"
+				"getPower": "stat/sonoff/POWER",
+				"setPower": "cmnd/sonoff/power",
+				"getEnergy": "tele/sonoff/ENERGY",
+				"getState": "tele/sonoff/STATE",
+	        	"activity": "tele/sonoff/LWT"
 			},
-			"onValue": "1",
-			"offValue": "0",
-		        
-			"manufacturer": "Teckin",
-			"model": "SP21",
+			"onValue": "ON",
+			"offValue": "OFF",
+		
+			"outletInUseBy": "current",
+			"outletInUseCurrent": "0.01",
+			
+			"totalPowerResetBy": "month",
+	    
+			"startCmd": "cmnd/sonoff/TelePeriod",
+			"startParameter": "15",
+		
+			"patchToSave":"/root/.homebridge/",
+			"savePeriod": "15",
+				
+			"manufacturer": "ITEAD",
+			"model": "Sonoff TH",
 			"serialNumberMAC": "MAC OR SERIAL NUMBER"
 		}
 	]
 }
-
