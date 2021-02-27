@@ -1,5 +1,5 @@
 {
-  "name": "accessory-tasmota-postgres",
+  "name": "homebridge-tasmota-pm-pgsql",
   "version": "1.0.0",
   "description": "Log Power Meter to postgres DB",
   "main": "dist/accessory.js",
