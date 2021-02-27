@@ -21,15 +21,11 @@
 		
 			"outletInUseBy": "current",
 			"outletInUseCurrent": "0.01",
-			
-			"totalPowerResetBy": "month",
 	    
 			"startCmd": "cmnd/sonoff/TelePeriod",
 			"startParameter": "15",
 		
-			"patchToSave":"/root/.homebridge/",
 			"savePeriod": "15",
-				
 			"manufacturer": "ITEAD",
 			"model": "Sonoff TH",
 			"serialNumberMAC": "MAC OR SERIAL NUMBER"

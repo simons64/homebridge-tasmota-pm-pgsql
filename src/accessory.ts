@@ -20,7 +20,7 @@ import tmpmd from './tasmotamqtt';
 
 export = (api: API) => {
   hap = api.hap;
-  api.registerAccessory("powermeter", TasmotaPowerMeterDevice);
+  api.registerAccessory("tasmota-pm-pgsql", TasmotaPowerMeterDevice);
 };
 
 
