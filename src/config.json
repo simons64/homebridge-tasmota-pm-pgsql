@@ -1,0 +1,25 @@
+{
+	"accessories": [
+	    {
+			"accessory": "mqtt-switch-espurna2",
+			"name": "ESPURNA-KUEHLER",
+		
+			"url": "mqtt://192.168.10.24",
+			"username": "mqttuser",
+			"password": "2457",
+		
+			"topics": {
+				"state": "ESPURNA-KUEHLER/status",
+				"data": "ESPURNA-KUEHLER/data",
+				"toggle": "ESPURNA-KUEHLER/relay/0/set"
+			},
+			"onValue": "1",
+			"offValue": "0",
+		        
+			"manufacturer": "Teckin",
+			"model": "SP21",
+			"serialNumberMAC": "MAC OR SERIAL NUMBER"
+		}
+	]
+}
+
