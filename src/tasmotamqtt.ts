@@ -64,7 +64,7 @@ class TMPMD {
 		reconnectPeriod: 1000,
 		connectTimeout: 30 * 1000,
 		will: {
-			topic: config["name"],
+			topic: config.name,
 			payload: ' >> Connection closed abnormally..!',
 			qos: 0,
 			retain: false
@@ -73,6 +73,9 @@ class TMPMD {
 		password: config.password,
 		rejectUnauthorized: false
 	};
+ 
+    	
+
 
 	this.mqttHandle = connect(this.mqttURL, this.mqttOptions);
 	this.mqttHandle
@@ -91,6 +94,7 @@ class TMPMD {
 		})
 		.on("connect", (packet: IConnackPacket) => {
 			log.info("Succesfully connect to MQTT Broker [", this.mqttURL, "]");
+		    this.mqttHandle.publish(config.startCmd, config.startParameter);
 		})
 		.on("message", (topic: string, payload: Buffer) => {
 			log.info(`MQTT: ${topic}: ${payload}`);
@@ -99,13 +103,13 @@ class TMPMD {
 				this.switchOn = (state == this.onValue);
 			}
 			else if (topic == this.topicGetState) {
+				let strPayload = payload.toString();
 				try {
-					let data = JSON.parse(payload.toString());
-					this.switchOn = (data['relay/0'].toString() == this.onValue);
+					let data = JSON.parse(strPayload);
+					this.log.info("data", data);
 				} catch (e) {
-					log.info("Exception:", e);
+					log.info("Exception on JSON.parse()");
 				}
-                this.log.info("Da war a Message am Bus :)", this.topicGetState);
 			}
 			else if (topic == this.topicGetState) {
 			}
@@ -116,14 +120,13 @@ class TMPMD {
 		});
   }
 
-  public onTest?: (state: boolean) => void;
 
+  public onTest?: (state: boolean) => void;
 
   public setSwitchState(state: boolean) {
 	this.log.info("publish to mqtt client state: ", state);
     this.mqttHandle.publish(this.topicSetPower, (state ? this.onValue : this.offValue));	
   }
-
 
 }
 
