@@ -50,8 +50,8 @@ class TasmotaPowerMeterDevice implements AccessoryPlugin {
     this.switchService = new hap.Service.Outlet(this.name);
     this.mqttBackend = new tmpmd(log, config, this.switchService);
 	
-	this.mqttBackend.onBlub = () => {
-		log.info("das ist aus accessory.ts");
+	this.mqttBackend.onTest = (state: boolean) => {
+		log.info("onTest Callback", state);
 	}
 
 	this.switchService.getCharacteristic(hap.Characteristic.On)

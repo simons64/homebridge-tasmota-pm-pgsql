@@ -52,7 +52,6 @@ class TMPMD {
     this.onValue = config.onValue;
 	this.offValue = config.offValue;
 
-
 	// MQTT stuff
 	this.mqttURL = config.url;
 	this.mqttClientID = 'mqttjs_' + Math.random().toString(16).substr(2, 8);
@@ -75,7 +74,7 @@ class TMPMD {
 		rejectUnauthorized: false
 	};
 
-    this.mqttHandle = connect(this.mqttURL, this.mqttOptions);
+	this.mqttHandle = connect(this.mqttURL, this.mqttOptions);
 	this.mqttHandle
 		.subscribe( 
 			{
@@ -89,41 +88,36 @@ class TMPMD {
 			granted.forEach(({topic, qos}) => {
 				log.info(`subscribed to ${topic} with qos=${qos}`)
 			})
-			this.mqttHandle.publish("hellp", "hellp");
 		})
 		.on("connect", (packet: IConnackPacket) => {
-			log.info("Succesfully connect to MQTT Broker [", this.mqttURL, "]", "###", packet);
+			log.info("Succesfully connect to MQTT Broker [", this.mqttURL, "]");
 		})
 		.on("message", (topic: string, payload: Buffer) => {
 			log.info(`MQTT: ${topic}: ${payload}`);
-			let _data = payload.toString();
 			if (topic == this.topicGetPower) {
+				let state = payload.toString();
+				this.switchOn = (state == this.onValue);
+			}
+			else if (topic == this.topicGetState) {
 				try {
-					let data = JSON.parse(_data);
+					let data = JSON.parse(payload.toString());
 					this.switchOn = (data['relay/0'].toString() == this.onValue);
-					log.info(`Switch:${this.switchOn}`);		   
 				} catch (e) {
 					log.info("Exception:", e);
 				}
-                this.log.info("Da war a Message am Bus :)", this.topicGetPower);
-				this.gpCallback(this.switchOn);
-				//this.switchService.updateCharacteristic(hap.Characteristic.On, this.switchOn);
-
+                this.log.info("Da war a Message am Bus :)", this.topicGetState);
 			}
 			else if (topic == this.topicGetState) {
-				//this.activeStat = data.includes(this.onValue);
-				//this.service.setCharacteristic(Characteristic.StatusActive, that.activeStat);
 			}
+
+			// callback for accessory	
+			if (this.onTest)
+				this.onTest(this.switchOn);
 		});
   }
 
-  public onBlub?: () => void
+  public onTest?: (state: boolean) => void;
 
-  public gpCallback(state: boolean) {
-	this.log.info("I bims der Callbeker", state); 
-	if (!this.onBlub) return
-	this.onBlub()
-  }
 
   public setSwitchState(state: boolean) {
 	this.log.info("publish to mqtt client state: ", state);
