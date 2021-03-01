@@ -13,12 +13,21 @@ import {
 } from "mqtt";
 
 
+export interface EnergyLog {
+	dev: string;
+	volts: number;
+	amps: number;
+	watts: number;
+}
+
 // TasmotaMqttPowerMeterDevice = TMPMD
-class TMPMD {
+export class TMPMD {
   private readonly log: Logging;
  
   private mqttHandle: Client;
   private readonly mqttOptions: IClientOptions; 
+
+  private readonly devName: string;
 
   private readonly topicGetPower: string;
   private readonly topicSetPower: string;
@@ -41,7 +50,8 @@ class TMPMD {
  	// use homebridge log 
     this.log = log;
 	this.switchService = switchService;
-   
+	this.devName = config.name;  
+  
 	// set topics
 	this.topicGetPower = config.topics.getPower;
 	this.topicSetPower = config.topics.setPower;
@@ -51,6 +61,7 @@ class TMPMD {
 
     this.onValue = config.onValue;
 	this.offValue = config.offValue;
+
 
 	// MQTT stuff
 	this.mqttURL = config.url;
@@ -106,22 +117,34 @@ class TMPMD {
 				let strPayload = payload.toString();
 				try {
 					let data = JSON.parse(strPayload);
-					this.log.info("data", data);
+				} catch (e) {
+					log.info("Exception: topicGetState, JSON.parse()");
+				}
+			}
+			else if (topic == this.topicGetEnergy) {
+				let strPayload = payload.toString();
+				try {
+					let data = JSON.parse(strPayload);
+					if (this.onEnergyUpdate) 
+						this.onEnergyUpdate( {
+							dev: this.devName, 
+						    volts: data.ENERGY.Voltage, 
+							amps: data.ENERGY.Current, 
+							watts: data.ENERGY.Power	
+						});
 				} catch (e) {
 					log.info("Exception on JSON.parse()");
 				}
 			}
-			else if (topic == this.topicGetState) {
-			}
-
 			// callback for accessory	
-			if (this.onTest)
-				this.onTest(this.switchOn);
+			if (this.onPowerChange)
+				this.onPowerChange(this.switchOn);
 		});
   }
 
 
-  public onTest?: (state: boolean) => void;
+  public onPowerChange?: (state: boolean) => void;
+  public onEnergyUpdate?: (eLog: EnergyLog) => void;
 
   public setSwitchState(state: boolean) {
 	this.log.info("publish to mqtt client state: ", state);
@@ -130,4 +153,3 @@ class TMPMD {
 
 }
 
-export default TMPMD;

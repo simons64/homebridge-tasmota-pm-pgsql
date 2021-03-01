@@ -12,7 +12,7 @@
 			"topics": {
 				"getPower": "stat/sonoff/POWER",
 				"setPower": "cmnd/sonoff/power",
-				"getEnergy": "tele/sonoff/ENERGY",
+				"getEnergy": "tele/sonoff/SENSOR",
 				"getState": "tele/sonoff/STATE",
 	        	"activity": "tele/sonoff/LWT"
 			},

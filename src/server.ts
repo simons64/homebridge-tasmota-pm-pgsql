@@ -1,5 +1,6 @@
 import dbclient from './dbconfig';
 
+
 class Server {
     constructor() {
 		this.dbconnect();
@@ -12,15 +13,34 @@ class Server {
 		dbclient.end();
 	}
 
-    public getAllDevices() {
-		dbclient.query('SELECT * FROM sevenseg_powermeterdevice', (err, res) => {
-		  console.log(err, res)
-		})
+	private addDevice(device: string) {
+		const q1 = {
+			text: 'INSERT INTO sevenseg_powermeterdevice (name, volts, amps, watts, lastupdate) VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP)',
+			values: [device, 0.0, 0.0, 0.0],
+		}
+		dbclient
+			.query(q1)
+			.catch(err => console.log(err))
 	}
-    public getAllLogs() {
-		dbclient.query('SELECT * FROM sevenseg_powermeterlog', (err, res) => {
-		  console.log(err, res)
-		})
+
+	public checkForDevice(device: string) {
+		const q1 = {text: 'SELECT name FROM sevenseg_powermeterdevice'}
+		dbclient
+			.query(q1)
+			.then(res => {
+				var exists = false;
+				for(const el of res.rows) {
+					if(el.name && !el.name.localeCompare(device)) {
+						exists = true;
+						break;
+					}
+				}
+
+				if(!exists) {
+					this.addDevice(device);
+				}	
+			})
+			.catch(err => console.log(err));
 	}
 
 	public addLog(device: string, v: number, a: number, w: number) {
@@ -31,7 +51,6 @@ class Server {
 		}
 		dbclient
 			.query(q1)
-			.then(res => console.log(res))
 			.catch(err => console.log(err))
 
 		// add log to log table
@@ -41,7 +60,6 @@ class Server {
 		}
 		dbclient
 			.query(q2)
-			.then(res => console.log(res))
 			.catch(err => console.log(err))
 	}
 }

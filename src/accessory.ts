@@ -14,7 +14,10 @@ import {
 let hap: HAP;
 
 import server from './server';
-import tmpmd from './tasmotamqtt';
+import {
+	TMPMD,
+	EnergyLog
+} from './tasmotamqtt';
 
 //  Initializer function called when the plugin is loaded.
 
@@ -37,7 +40,7 @@ class TasmotaPowerMeterDevice implements AccessoryPlugin {
 
   private switchOn = false;
 
-  private mqttBackend: tmpmd;
+  private mqttBackend: TMPMD;
   private pgs = new server();
 
   constructor(log: Logging, config: AccessoryConfig, api: API) {
@@ -47,11 +50,18 @@ class TasmotaPowerMeterDevice implements AccessoryPlugin {
     this.onValue = config.onValue;
 	this.offValue = config.offValue; 
 
+	// check for device in DB 
+	this.pgs.checkForDevice(this.name);
+
     this.switchService = new hap.Service.Outlet(this.name);
-    this.mqttBackend = new tmpmd(log, config, this.switchService);
+    this.mqttBackend = new TMPMD(log, config, this.switchService);
 	
-	this.mqttBackend.onTest = (state: boolean) => {
-		log.info("onTest Callback", state);
+	this.mqttBackend.onPowerChange = (state: boolean) => {		
+		log.info("onPowerChange Callback, setting switch state: ", state);
+	}
+	this.mqttBackend.onEnergyUpdate = (eLog: EnergyLog) => {
+		log.info("onEnergyUpdate Callback, eLog: ", eLog);
+		this.pgs.addLog(eLog.dev, eLog.volts, eLog.amps, eLog.watts);
 	}
 
 	this.switchService.getCharacteristic(hap.Characteristic.On)
@@ -74,7 +84,6 @@ class TasmotaPowerMeterDevice implements AccessoryPlugin {
 
 
     log.info("Outlet Service configured!");
-
   }
 
   /*
