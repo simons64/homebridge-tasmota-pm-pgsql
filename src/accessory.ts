@@ -11,29 +11,19 @@ import {
   Service
 } from "homebridge";
 
-let hap: HAP;
-
 import server from './server';
 import {
 	TMPMD,
 	EnergyLog
 } from './tasmotamqtt';
 
-//  Initializer function called when the plugin is loaded.
 
-export = (api: API) => {
-  hap = api.hap;
-  api.registerAccessory("tasmota-pm-pgsql", TasmotaPowerMeterDevice);
-};
-
-
-
-class TasmotaPowerMeterDevice implements AccessoryPlugin {
+export class TasmotaPowerMeterDevice implements AccessoryPlugin {
   private readonly switchService: Service;
   private readonly informationService: Service;
 
+  name: string;
   private readonly log: Logging;
-  private readonly name: string;
 
   private onValue: string;
   private offValue: string;
@@ -43,7 +33,7 @@ class TasmotaPowerMeterDevice implements AccessoryPlugin {
   private mqttBackend: TMPMD;
   private pgs = new server();
 
-  constructor(log: Logging, config: AccessoryConfig, api: API) {
+  constructor(hap: HAP, log: Logging, name: string, config: any) {
     this.log = log;
     this.name = config.name;
   

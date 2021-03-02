@@ -20,14 +20,14 @@ class Server {
 		}
 		dbclient
 			.query(q1)
-			.catch(err => console.log(err))
+			.catch((err: any) => console.log(err))
 	}
 
 	public checkForDevice(device: string) {
 		const q1 = {text: 'SELECT name FROM sevenseg_powermeterdevice'}
 		dbclient
 			.query(q1)
-			.then(res => {
+			.then((res: any) => {
 				var exists = false;
 				for(const el of res.rows) {
 					if(el.name && !el.name.localeCompare(device)) {
@@ -40,7 +40,7 @@ class Server {
 					this.addDevice(device);
 				}	
 			})
-			.catch(err => console.log(err));
+			.catch((err: any) => console.log(err))
 	}
 
 	public addLog(device: string, v: number, a: number, w: number) {
@@ -51,7 +51,7 @@ class Server {
 		}
 		dbclient
 			.query(q1)
-			.catch(err => console.log(err))
+			.catch((err: any) => console.log(err))
 
 		// add log to log table
 		const q2 = {
@@ -60,7 +60,7 @@ class Server {
 		}
 		dbclient
 			.query(q2)
-			.catch(err => console.log(err))
+			.catch((err: any) => console.log(err))
 	}
 }
 
