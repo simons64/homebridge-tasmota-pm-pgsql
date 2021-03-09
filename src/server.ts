@@ -1,6 +1,5 @@
 import dbclient from './dbconfig';
 
-
 class Server {
     constructor() {
 		this.dbconnect();
