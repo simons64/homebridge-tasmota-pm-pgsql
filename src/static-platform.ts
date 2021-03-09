@@ -17,7 +17,6 @@ class TasmotaPMSQLPlatform implements StaticPlatformPlugin {
   private readonly log: Logging;
   private readonly aconf: any;
 
-
   constructor(log: Logging, config: PlatformConfig, api: API) {
     this.log = log;
 
@@ -53,9 +52,6 @@ class TasmotaPMSQLPlatform implements StaticPlatformPlugin {
 
     log.info("Example platform finished initializing!");
   }
-
-
-
 
 
   /*
