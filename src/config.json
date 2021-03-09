@@ -1,34 +1,30 @@
 {
-	"accessories": [
+	"name": "Tasmota Postgres Platform",
+	"devices": [
 		{
-			"accessory": "tasmota-postgres",
-
-			"name": "NAME OF THIS ACCESSORY",
-		
-			"url": "mqtt://MQTT-ADDRESS",
-			"username": "MQTT USER NAME",
-			"password": "MQTT PASSWORD",
-
+			"name": "ACCESSORY NAME",
+			"sqluser": "SQLUSER",
+			"url": "mqtt://localhost",
+			"username": "MQTTUSER",
+			"password": "MQTTPASSWORD",
 			"topics": {
-				"getPower": "stat/sonoff/POWER",
-				"setPower": "cmnd/sonoff/power",
-				"getEnergy": "tele/sonoff/SENSOR",
-				"getState": "tele/sonoff/STATE",
-	        	"activity": "tele/sonoff/LWT"
+				"getPower": "stat/ ... /POWER",
+				"setPower": "cmnd/ ... /power",
+				"getEnergy": "tele/ ... /SENSOR",
+				"getState": "tele/ ... /STATE",
+				"activity": "tele/ ... /LWT"
 			},
 			"onValue": "ON",
 			"offValue": "OFF",
-		
 			"outletInUseBy": "current",
 			"outletInUseCurrent": "0.01",
-	    
-			"startCmd": "cmnd/sonoff/TelePeriod",
-			"startParameter": "15",
-		
+			"startCmd": "cmnd/ ... /TelePeriod",
+			"startParameter": "30",
 			"savePeriod": "15",
-			"manufacturer": "ITEAD",
-			"model": "Sonoff TH",
-			"serialNumberMAC": "MAC OR SERIAL NUMBER"
+			"manufacturer": "Blitzwolf",
+			"model": "Blitzwolf SHP22",
+			"serialNumberMAC": ""
 		}
-	]
+	],
+	"platform": "TasmotaPostgres"
 }

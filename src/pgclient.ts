@@ -1,6 +1,6 @@
 import dbclient from './dbconfig';
 
-class Server {
+export class PGClient {
     constructor() {
 		this.dbconnect();
  	}
@@ -62,5 +62,3 @@ class Server {
 			.catch((err: any) => console.log(err))
 	}
 }
-
-export default Server;

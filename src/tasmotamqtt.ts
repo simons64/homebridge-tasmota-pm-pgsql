@@ -35,7 +35,6 @@ export class TMPMD {
   private readonly topicGetState: string;
   private readonly topicActivity: string;
 
-
   private readonly onValue: string;
   private readonly offValue: string;
 
@@ -84,8 +83,6 @@ export class TMPMD {
 		password: config.password,
 		rejectUnauthorized: false
 	};
- 
-    	
 
 
 	this.mqttHandle = connect(this.mqttURL, this.mqttOptions);

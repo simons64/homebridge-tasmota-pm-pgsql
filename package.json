@@ -2,7 +2,7 @@
   "name": "homebridge-tasmota-pm-pgsql-platform",
   "version": "1.0.0",
   "description": "Log Power Meter to postgres DB",
-  "main": "dist/accessory.js",
+  "main": "dist/static-platform.js",
   "scripts": {
     "clean": "rimraf ./dist",
     "build": "rimraf ./dist && tsc",
