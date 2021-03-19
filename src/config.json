@@ -16,11 +16,9 @@
 			},
 			"onValue": "ON",
 			"offValue": "OFF",
-			"outletInUseBy": "current",
-			"outletInUseCurrent": "0.01",
+		    "activeValue": "Online",	
 			"startCmd": "cmnd/ ... /TelePeriod",
 			"startParameter": "30",
-			"savePeriod": "15",
 			"manufacturer": "Blitzwolf",
 			"model": "Blitzwolf SHP22",
 			"serialNumberMAC": ""
