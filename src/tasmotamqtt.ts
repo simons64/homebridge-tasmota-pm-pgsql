@@ -37,12 +37,14 @@ export class TMPMD {
 
   private readonly onValue: string;
   private readonly offValue: string;
+  private readonly activeValue: string;
 
   private readonly mqttURL: string;
   private readonly mqttClientID: string; 
 
   private readonly switchService: Service; 
   private switchOn = false;
+  private statusActive = false;
 
 
   constructor(log: Logging, config: AccessoryConfig, switchService: Service) {
@@ -60,7 +62,7 @@ export class TMPMD {
 
     this.onValue = config.onValue;
 	this.offValue = config.offValue;
-
+	this.activeValue = config.activeValue;
 
 	// MQTT stuff
 	this.mqttURL = config.url;
@@ -105,15 +107,22 @@ export class TMPMD {
 		    this.mqttHandle.publish(config.startCmd, config.startParameter);
 		})
 		.on("message", (topic: string, payload: Buffer) => {
-			log.info(`MQTT: ${topic}: ${payload}`);
+			//log.info(`MQTT: ${topic}: ${payload}`);
 			if (topic == this.topicGetPower) {
 				let state = payload.toString();
 				this.switchOn = (state == this.onValue);
+			}
+			else if (topic == this.topicActivity) {
+				let state = payload.toString();
+				this.statusActive = (state == this.activeValue);
+				if (this.onStatusActiveChange)
+					this.onStatusActiveChange(this.statusActive);
 			}
 			else if (topic == this.topicGetState) {
 				let strPayload = payload.toString();
 				try {
 					let data = JSON.parse(strPayload);
+					this.switchOn = (data["POWER"] == this.onValue);	
 				} catch (e) {
 					log.info("Exception: topicGetState, JSON.parse()");
 				}
@@ -133,7 +142,7 @@ export class TMPMD {
 					log.info("Exception on JSON.parse()");
 				}
 			}
-			// callback for accessory	
+			// callback for accessory
 			if (this.onPowerChange)
 				this.onPowerChange(this.switchOn);
 		});
@@ -141,9 +150,10 @@ export class TMPMD {
 
 
   public onPowerChange?: (state: boolean) => void;
+  public onStatusActiveChange?: (statusAcitve: boolean) => void;
   public onEnergyUpdate?: (eLog: EnergyLog) => void;
 
-  public setSwitchState(state: boolean) {
+  public setPowerState(state: boolean) {
 	this.log.info("publish to mqtt client state: ", state);
     this.mqttHandle.publish(this.topicSetPower, (state ? this.onValue : this.offValue));	
   }

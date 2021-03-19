@@ -21,17 +21,19 @@ import {
 
 
 export class TasmotaPowerMeterDevice implements AccessoryPlugin {
-  private readonly switchService: Service;
-  private readonly informationService: Service;
-
   name: string;
   private readonly log: Logging;
+  
+  private readonly switchService: Service;
+  private readonly informationService: Service;
+  private mqttBackend: TMPMD;
 
   private onValue: string;
   private offValue: string;
 
   private switchOn = false;
-  private mqttBackend: TMPMD;
+  private statusActive = false;
+  private readonly outletInUse = true;
 
   constructor(hap: HAP, log: Logging, name: string, config: any, pgclient: PGClient) {
     this.log = log;
@@ -45,26 +47,39 @@ export class TasmotaPowerMeterDevice implements AccessoryPlugin {
 
     this.switchService = new hap.Service.Outlet(this.name);
     this.mqttBackend = new TMPMD(log, config, this.switchService);
-	
+		
+
 	this.mqttBackend.onPowerChange = (state: boolean) => {		
-		log.info("onPowerChange Callback, setting switch state: ", state);
+        this.switchOn = state;
 	}
+	this.mqttBackend.onStatusActiveChange = (statusActive: boolean) => {
+        this.statusActive = statusActive;
+    }
 	this.mqttBackend.onEnergyUpdate = (eLog: EnergyLog) => {
-		log.info("onEnergyUpdate Callback, eLog: ", eLog);
 		pgclient.addLog(eLog.dev, eLog.volts, eLog.amps, eLog.watts);
 	}
 
 	this.switchService.getCharacteristic(hap.Characteristic.On)
       .on(CharacteristicEventTypes.GET, (callback: CharacteristicGetCallback) => {
-        log.info("Current state of the switch was returned: " + (this.switchOn? this.onValue: this.offValue));
-		callback(undefined, this.switchOn);
+        //log.info("Current state of the switch was returned: " + (this.switchOn? this.onValue: this.offValue));
+		callback(null, this.switchOn);
       })
       .on(CharacteristicEventTypes.SET, (value: CharacteristicValue, callback: CharacteristicSetCallback) => {
         this.switchOn = value as boolean;
-        log.info("Switch state was set to: " + (this.switchOn? this.onValue: this.offValue));
-		this.mqttBackend.setSwitchState(this.switchOn);
+        //log.info("Switch state was set to: " + (this.switchOn? this.onValue: this.offValue));
+		this.mqttBackend.setPowerState(this.switchOn);
         callback();
       });
+	
+	this.switchService.getCharacteristic(hap.Characteristic.OutletInUse)
+      .on(CharacteristicEventTypes.GET, (callback: CharacteristicGetCallback) => {
+		callback(null, this.outletInUse);
+      });
+
+	this.switchService.getCharacteristic(hap.Characteristic.StatusActive)
+      .on(CharacteristicEventTypes.GET, (callback: CharacteristicGetCallback) => {
+        callback(null, this.statusActive);
+      });	
 
     this.informationService = new hap.Service.AccessoryInformation()
       .setCharacteristic(hap.Characteristic.Name, this.name)
