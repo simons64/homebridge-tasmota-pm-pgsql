@@ -5,5 +5,5 @@ export default new pg.Client({
     host: '',
     database: '',
     password: '',
-    port: ,
+    port: 1,
 });
