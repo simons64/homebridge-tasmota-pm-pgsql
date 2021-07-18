@@ -1,5 +1,7 @@
 # Created by .ignore support plugin (hsz.mobi)
 src/dbconfig.ts
+*.swp
+src/*.swp
 
 ### HAP-NodeJS files
 persist
